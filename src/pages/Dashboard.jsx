@@ -44,23 +44,50 @@ function Dashboard() {
             <CardTitle>Continue Practice</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Dynamic Programming</h4>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-500"
-                      style={{ width: '30%' }}
-                    ></div>
+            {/* Change hasIncompleteTopic to false to test completion state */}
+            {(() => {
+              const hasIncompleteTopic = true // Set to false to test completion
+              const currentTopic = 'Dynamic Programming'
+              const completed = 3
+              const total = 10
+
+              if (!hasIncompleteTopic) {
+                return (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">All Topics Complete!</h4>
+                    <p className="text-sm text-gray-600 mb-4">Great job! Consider reviewing previous topics or starting advanced challenges.</p>
+                    <button className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors">
+                      Review Topics
+                    </button>
                   </div>
-                  <span className="text-sm text-gray-600">3/10</span>
+                )
+              }
+
+              return (
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{currentTopic}</h4>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-primary h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${(completed / total) * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600">{completed}/{total}</span>
+                    </div>
+                  </div>
+                  <button className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors">
+                    Continue
+                  </button>
                 </div>
-              </div>
-              <button className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors">
-                Continue
-              </button>
-            </div>
+              )
+            })()}
           </CardContent>
         </Card>
 
