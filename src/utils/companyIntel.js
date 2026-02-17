@@ -77,16 +77,213 @@ export function generateCompanyIntel(companyName, skills) {
   }
 }
 
-export function generateRoundMapping(companyIntel, skills) {
+export function generateRoundMapping(companyIntel, skills, role = '') {
   const { sizeCategory } = companyIntel
+  const lowerRole = role.toLowerCase()
+  
   const hasDSA = skills['Core CS'] && skills['Core CS'].some(s => 
     s.toLowerCase().includes('dsa') || s.toLowerCase().includes('algorithm')
   )
   const hasWeb = skills['Web'] && skills['Web'].length > 0
   const hasAIML = skills['AI/ML'] && skills['AI/ML'].length > 0
+  const hasData = skills['Data'] && skills['Data'].length > 0
+  
+  // Check if role is data-focused
+  const isDataRole = lowerRole.includes('data analyst') || 
+                     lowerRole.includes('data scientist') || 
+                     lowerRole.includes('business analyst') ||
+                     lowerRole.includes('analytics')
+  
+  // Check if role is AI/ML focused
+  const isAIMLRole = lowerRole.includes('ml') || 
+                     lowerRole.includes('machine learning') ||
+                     lowerRole.includes('ai engineer') ||
+                     lowerRole.includes('data scientist')
+  
+  // Check if role is design/product focused
+  const isDesignRole = lowerRole.includes('designer') || 
+                       lowerRole.includes('product') ||
+                       lowerRole.includes('ux') ||
+                       lowerRole.includes('ui')
   
   let rounds = []
   
+  // Data Analyst/Scientist specific rounds
+  if (isDataRole) {
+    if (sizeCategory === 'enterprise') {
+      rounds = [
+        {
+          round: 'Round 1',
+          title: 'SQL + Analytics Assessment',
+          description: 'SQL queries + Data interpretation + Statistics MCQs',
+          why: 'Tests fundamental data manipulation skills. Evaluates ability to extract insights from data using SQL and basic statistical knowledge.',
+          duration: '60-90 min'
+        },
+        {
+          round: 'Round 2',
+          title: 'Technical Interview - Data Analysis',
+          description: 'Case study + SQL deep-dive + Python/Excel',
+          why: 'Assesses problem-solving with real business scenarios. Tests proficiency in data tools and ability to derive actionable insights.',
+          duration: '45-60 min'
+        },
+        {
+          round: 'Round 3',
+          title: 'Business Case Discussion',
+          description: 'Metrics definition + Dashboard design + Stakeholder communication',
+          why: 'Evaluates business acumen and communication skills. Tests ability to translate data insights into business recommendations.',
+          duration: '45-60 min'
+        },
+        {
+          round: 'Round 4',
+          title: 'HR & Behavioral',
+          description: 'Culture fit + Behavioral questions + Compensation',
+          why: 'Assesses soft skills, team fit, and motivation. Discusses expectations, career goals, and finalizes offer details.',
+          duration: '30-45 min'
+        }
+      ]
+    } else if (sizeCategory === 'midsize') {
+      rounds = [
+        {
+          round: 'Round 1',
+          title: 'SQL + Analytics Test',
+          description: 'SQL queries + Data interpretation + Basic statistics',
+          why: 'Initial assessment of data manipulation and analytical thinking skills.',
+          duration: '45-60 min'
+        },
+        {
+          round: 'Round 2',
+          title: 'Technical + Case Study',
+          description: 'Live SQL + Business problem solving + Tool proficiency',
+          why: 'Deep-dive into technical skills and business understanding. Tests practical application of analytics.',
+          duration: '60 min'
+        },
+        {
+          round: 'Round 3',
+          title: 'Managerial Round',
+          description: 'Past projects + Stakeholder management + Team fit',
+          why: 'Evaluates experience and ability to work cross-functionally. Assesses communication and collaboration skills.',
+          duration: '45 min'
+        }
+      ]
+    } else {
+      // Startup
+      rounds = [
+        {
+          round: 'Round 1',
+          title: 'Practical Analytics Challenge',
+          description: 'Real dataset analysis + SQL + Visualization',
+          why: 'Startups need analysts who can deliver insights quickly. Tests hands-on ability with real-world messy data.',
+          duration: '60-90 min'
+        },
+        {
+          round: 'Round 2',
+          title: 'Technical Discussion',
+          description: 'Analysis review + Metrics discussion + Tool stack',
+          why: 'Evaluates analytical approach and business thinking. Discusses trade-offs and methodology choices.',
+          duration: '45-60 min'
+        },
+        {
+          round: 'Round 3',
+          title: 'Founder/Culture Fit',
+          description: 'Vision alignment + Learning mindset + Impact focus',
+          why: 'Startups need self-driven analysts who can wear multiple hats. Assesses adaptability and ownership mentality.',
+          duration: '30-45 min'
+        }
+      ]
+    }
+    return rounds
+  }
+  
+  // AI/ML Engineer specific rounds
+  if (isAIMLRole) {
+    if (sizeCategory === 'enterprise') {
+      rounds = [
+        {
+          round: 'Round 1',
+          title: 'ML Fundamentals Assessment',
+          description: 'ML algorithms + Statistics + Python coding',
+          why: 'Tests foundational ML knowledge and programming skills. Covers supervised/unsupervised learning, model evaluation.',
+          duration: '60-90 min'
+        },
+        {
+          round: 'Round 2',
+          title: 'ML System Design',
+          description: 'Model architecture + Feature engineering + Deployment',
+          why: 'Evaluates ability to design end-to-end ML systems. Tests understanding of ML pipeline and production considerations.',
+          duration: '60 min'
+        },
+        {
+          round: 'Round 3',
+          title: 'Technical Deep-Dive',
+          description: 'Past ML projects + Model optimization + Research discussion',
+          why: 'Assesses depth of ML experience and problem-solving approach. Discusses challenges faced and solutions implemented.',
+          duration: '45-60 min'
+        },
+        {
+          round: 'Round 4',
+          title: 'HR & Behavioral',
+          description: 'Culture fit + Team collaboration + Offer discussion',
+          why: 'Evaluates soft skills and team dynamics. Finalizes expectations and compensation.',
+          duration: '30-45 min'
+        }
+      ]
+    } else {
+      rounds = [
+        {
+          round: 'Round 1',
+          title: 'ML Coding Challenge',
+          description: 'Build ML model + Feature engineering + Evaluation',
+          why: 'Tests practical ML implementation skills. Evaluates ability to work with real datasets and deliver results.',
+          duration: '90-120 min'
+        },
+        {
+          round: 'Round 2',
+          title: 'Technical Discussion',
+          description: 'Model review + Architecture decisions + ML stack',
+          why: 'Deep-dive into ML approach and technical choices. Discusses model performance and optimization strategies.',
+          duration: '60 min'
+        },
+        {
+          round: 'Round 3',
+          title: 'Team & Culture Fit',
+          description: 'Research interests + Learning approach + Vision alignment',
+          why: 'Assesses passion for ML and continuous learning mindset. Evaluates fit with team and company goals.',
+          duration: '45 min'
+        }
+      ]
+    }
+    return rounds
+  }
+  
+  // Design/Product roles
+  if (isDesignRole) {
+    rounds = [
+      {
+        round: 'Round 1',
+        title: 'Portfolio Review',
+        description: 'Design portfolio + Case studies + Design process',
+        why: 'Evaluates design thinking and past work quality. Assesses ability to articulate design decisions.',
+        duration: '45-60 min'
+      },
+      {
+        round: 'Round 2',
+        title: 'Design Challenge',
+        description: 'Live design task + User research + Prototyping',
+        why: 'Tests practical design skills and problem-solving approach. Evaluates user-centric thinking.',
+        duration: '60-90 min'
+      },
+      {
+        round: 'Round 3',
+        title: 'Team Collaboration',
+        description: 'Cross-functional work + Feedback handling + Culture fit',
+        why: 'Assesses ability to work with engineers and PMs. Evaluates communication and collaboration skills.',
+        duration: '45 min'
+      }
+    ]
+    return rounds
+  }
+  
+  // Default: Software Engineering rounds (existing logic)
   if (sizeCategory === 'enterprise') {
     rounds = [
       {

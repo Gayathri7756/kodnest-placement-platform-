@@ -28,7 +28,7 @@ function Results() {
         if (data.company && data.company !== 'Not specified') {
           if (!data.companyIntel) {
             const intel = generateCompanyIntel(data.company, data.extractedSkills)
-            const rounds = generateRoundMapping(intel, data.extractedSkills)
+            const rounds = generateRoundMapping(intel, data.extractedSkills, data.role)
             data.companyIntel = intel
             data.roundMapping = rounds
             updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
