@@ -1,11 +1,13 @@
 import { Calendar, Clock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import React from 'react'
 import CircularProgress from '../components/CircularProgress'
 import SkillRadarChart from '../components/SkillRadarChart'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card'
 
 function Dashboard() {
   const navigate = useNavigate()
+  const [showCompletionState, setShowCompletionState] = React.useState(false)
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const activeDays = [true, true, false, true, true, false, false]
 
@@ -17,7 +19,15 @@ function Dashboard() {
 
   return (
     <div>
-      <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Dashboard</h2>
+        <button
+          onClick={() => setShowCompletionState(!showCompletionState)}
+          className="text-sm px-3 py-1 border border-gray-300 rounded hover:bg-gray-50"
+        >
+          {showCompletionState ? 'Show In Progress' : 'Test: All Complete'}
+        </button>
+      </div>
       
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Overall Readiness */}
@@ -46,9 +56,9 @@ function Dashboard() {
             <CardTitle>Continue Practice</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Change hasIncompleteTopic to false to test completion state */}
+            {/* Toggle between states using the button above */}
             {(() => {
-              const hasIncompleteTopic = true // Set to false to test completion
+              const hasIncompleteTopic = !showCompletionState
               const currentTopic = 'Dynamic Programming'
               const completed = 3
               const total = 10
