@@ -100,7 +100,9 @@ function History() {
                 <div className="flex flex-col items-end gap-2">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
-                    <span className="text-3xl font-bold text-primary">{item.readinessScore}</span>
+                    <span className="text-3xl font-bold text-primary">
+                      {item.currentReadinessScore || item.readinessScore}
+                    </span>
                   </div>
                   <span className="text-xs text-gray-500">Readiness Score</span>
                 </div>
