@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { getAnalysisById, updateAnalysis } from '../utils/historyStorage'
 import { copy7DayPlan, copyRoundChecklist, copyQuestions, downloadFullReport, copyToClipboard } from '../utils/exportUtils'
-import { CheckCircle, Calendar, Target, HelpCircle, ArrowLeft, Download, Copy, Check, AlertCircle } from 'lucide-react'
+import { generateCompanyIntel, generateRoundMapping } from '../utils/companyIntel'
+import { CheckCircle, Calendar, Target, HelpCircle, ArrowLeft, Download, Copy, Check, AlertCircle, Building2, TrendingUp, Users } from 'lucide-react'
 
 function Results() {
   const [searchParams] = useSearchParams()
@@ -10,6 +11,8 @@ function Results() {
   const [analysis, setAnalysis] = useState(null)
   const [currentScore, setCurrentScore] = useState(0)
   const [copiedItem, setCopiedItem] = useState(null)
+  const [companyIntel, setCompanyIntel] = useState(null)
+  const [roundMapping, setRoundMapping] = useState([])
 
   useEffect(() => {
     const id = searchParams.get('id')
@@ -20,6 +23,20 @@ function Results() {
         if (!data.skillConfidenceMap) {
           data.skillConfidenceMap = {}
         }
+        
+        // Generate or retrieve company intel
+        if (data.company && data.company !== 'Not specified') {
+          if (!data.companyIntel) {
+            const intel = generateCompanyIntel(data.company, data.extractedSkills)
+            const rounds = generateRoundMapping(intel, data.extractedSkills)
+            data.companyIntel = intel
+            data.roundMapping = rounds
+            updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
+          }
+          setCompanyIntel(data.companyIntel)
+          setRoundMapping(data.roundMapping || [])
+        }
+        
         setAnalysis(data)
         setCurrentScore(data.currentReadinessScore || data.readinessScore)
       } else {
@@ -147,6 +164,96 @@ function Results() {
           <div className="text-6xl font-bold">{currentScore}</div>
         </div>
       </div>
+
+      {/* Company Intel */}
+      {companyIntel && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-primary" />
+              Company Intel
+            </h3>
+            <span className="text-xs text-gray-500 italic">Demo Mode: Generated heuristically</span>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-4 mb-4">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-600">Company</span>
+              </div>
+              <p className="font-semibold text-gray-900">{companyIntel.name}</p>
+            </div>
+            
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-600">Industry</span>
+              </div>
+              <p className="font-semibold text-gray-900">{companyIntel.industry}</p>
+            </div>
+            
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-600">Size</span>
+              </div>
+              <p className="font-semibold text-gray-900">{companyIntel.size}</p>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-blue-50 border-l-4 border-primary rounded">
+            <h4 className="font-semibold text-gray-900 mb-2">Typical Hiring Focus</h4>
+            <p className="text-sm text-gray-700">{companyIntel.hiringFocus}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Round Mapping */}
+      {roundMapping.length > 0 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" />
+            Interview Round Flow
+          </h3>
+          <p className="text-sm text-gray-600 mb-6">Based on company size and detected skills</p>
+          
+          <div className="space-y-6">
+            {roundMapping.map((round, idx) => (
+              <div key={idx} className="relative">
+                {idx < roundMapping.length - 1 && (
+                  <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gray-300"></div>
+                )}
+                
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-bold text-lg">
+                    {idx + 1}
+                  </div>
+                  
+                  <div className="flex-1 pb-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-semibold text-gray-900 text-lg">{round.title}</h4>
+                        <p className="text-sm text-gray-600">{round.description}</p>
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {round.duration}
+                      </span>
+                    </div>
+                    
+                    <div className="mt-3 p-3 bg-purple-50 border-l-2 border-purple-400 rounded">
+                      <p className="text-sm font-medium text-purple-900 mb-1">
+                        💡 Why this round matters
+                      </p>
+                      <p className="text-sm text-purple-800">{round.why}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Extracted Skills with Toggle */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
