@@ -1,10 +1,11 @@
 // Skill categories and keywords
 const SKILL_CATEGORIES = {
   'Core CS': ['dsa', 'data structures', 'algorithms', 'oop', 'object oriented', 'dbms', 'database', 'os', 'operating system', 'networks', 'networking', 'computer networks'],
-  'Languages': ['java', 'python', 'javascript', 'typescript', 'c++', 'c#', 'golang', 'go lang', 'ruby', 'php', 'swift', 'kotlin'],
-  'Web': ['react', 'reactjs', 'next.js', 'nextjs', 'node.js', 'nodejs', 'express', 'expressjs', 'rest', 'restful', 'api', 'graphql', 'vue', 'angular', 'html', 'css'],
-  'Data': ['sql', 'mongodb', 'postgresql', 'mysql', 'redis', 'nosql', 'database'],
-  'Cloud/DevOps': ['aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'k8s', 'ci/cd', 'jenkins', 'linux', 'devops'],
+  'Languages': ['java', 'python', 'javascript', 'typescript', 'c++', 'c#', 'golang', 'go lang', 'ruby', 'php', 'swift', 'kotlin', 'rust', 'scala'],
+  'Web': ['react', 'reactjs', 'next.js', 'nextjs', 'node.js', 'nodejs', 'express', 'expressjs', 'rest', 'restful', 'api', 'graphql', 'vue', 'angular', 'html', 'css', 'django', 'flask', 'spring boot'],
+  'Data': ['sql', 'mongodb', 'postgresql', 'mysql', 'redis', 'nosql', 'database', 'pandas', 'numpy'],
+  'AI/ML': ['machine learning', 'deep learning', 'tensorflow', 'pytorch', 'keras', 'scikit-learn', 'nlp', 'natural language processing', 'computer vision', 'neural network', 'ai', 'ml', 'data science'],
+  'Cloud/DevOps': ['aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'k8s', 'ci/cd', 'jenkins', 'linux', 'devops', 'terraform', 'ansible'],
   'Testing': ['selenium', 'cypress', 'playwright', 'junit', 'pytest', 'testing', 'test automation', 'jest']
 }
 
@@ -267,25 +268,86 @@ export function generateQuestions(skills) {
 }
 
 export function calculateReadinessScore(jdText, company, role, skills) {
-  let score = 35 // Base score
+  let score = 25 // Lower base score
   
-  // +5 per category detected (max 30)
+  const lowerRole = role.toLowerCase()
+  const lowerJD = jdText.toLowerCase()
+  
+  // Check role-skill alignment
+  let roleSkillMatch = 0
+  let requiredSkillsPresent = 0
+  let totalRequiredSkills = 0
+  
+  // AI/ML Engineer - needs AI/ML specific skills
+  if (lowerRole.includes('ai') || lowerRole.includes('ml') || lowerRole.includes('machine learning')) {
+    totalRequiredSkills = 5
+    const aiSkills = ['python', 'tensorflow', 'pytorch', 'machine learning', 'deep learning', 'ai', 'ml', 'neural network', 'nlp', 'computer vision']
+    aiSkills.forEach(skill => {
+      if (lowerJD.includes(skill)) requiredSkillsPresent++
+    })
+    roleSkillMatch = Math.floor((requiredSkillsPresent / totalRequiredSkills) * 30)
+  }
+  // Data Scientist/Analyst
+  else if (lowerRole.includes('data scientist') || lowerRole.includes('data analyst')) {
+    totalRequiredSkills = 5
+    const dataSkills = ['python', 'sql', 'pandas', 'numpy', 'statistics', 'data analysis', 'visualization', 'tableau', 'power bi']
+    dataSkills.forEach(skill => {
+      if (lowerJD.includes(skill)) requiredSkillsPresent++
+    })
+    roleSkillMatch = Math.floor((requiredSkillsPresent / totalRequiredSkills) * 30)
+  }
+  // Full Stack/Web Developer
+  else if (lowerRole.includes('full stack') || lowerRole.includes('web developer') || lowerRole.includes('frontend') || lowerRole.includes('backend')) {
+    totalRequiredSkills = 4
+    const webSkills = ['react', 'node', 'javascript', 'typescript', 'html', 'css', 'api', 'rest']
+    webSkills.forEach(skill => {
+      if (lowerJD.includes(skill)) requiredSkillsPresent++
+    })
+    roleSkillMatch = Math.floor((requiredSkillsPresent / totalRequiredSkills) * 30)
+  }
+  // DevOps Engineer
+  else if (lowerRole.includes('devops') || lowerRole.includes('sre')) {
+    totalRequiredSkills = 4
+    const devopsSkills = ['docker', 'kubernetes', 'aws', 'azure', 'gcp', 'ci/cd', 'jenkins', 'linux', 'terraform']
+    devopsSkills.forEach(skill => {
+      if (lowerJD.includes(skill)) requiredSkillsPresent++
+    })
+    roleSkillMatch = Math.floor((requiredSkillsPresent / totalRequiredSkills) * 30)
+  }
+  // Generic Software Engineer
+  else {
+    totalRequiredSkills = 4
+    const genericSkills = ['dsa', 'algorithms', 'data structures', 'oop', 'programming', 'coding']
+    genericSkills.forEach(skill => {
+      if (lowerJD.includes(skill)) requiredSkillsPresent++
+    })
+    roleSkillMatch = Math.floor((requiredSkillsPresent / totalRequiredSkills) * 30)
+  }
+  
+  score += roleSkillMatch
+  
+  // +5 per category detected (max 25)
   const categoryCount = Object.keys(skills).length
-  score += Math.min(categoryCount * 5, 30)
+  score += Math.min(categoryCount * 5, 25)
   
-  // +10 if company provided
-  if (company && company.trim().length > 0) {
-    score += 10
+  // +5 if company provided
+  if (company && company.trim().length > 0 && company !== 'Not specified') {
+    score += 5
   }
   
-  // +10 if role provided
-  if (role && role.trim().length > 0) {
-    score += 10
+  // +5 if role provided
+  if (role && role.trim().length > 0 && role !== 'Not specified') {
+    score += 5
   }
   
-  // +10 if JD length > 800 chars
+  // +10 if JD is detailed (> 800 chars)
   if (jdText.length > 800) {
     score += 10
+  }
+  
+  // Penalty if role-skill mismatch is severe
+  if (totalRequiredSkills > 0 && requiredSkillsPresent === 0) {
+    score = Math.max(score - 20, 20) // Significant penalty for complete mismatch
   }
   
   // Cap at 100
