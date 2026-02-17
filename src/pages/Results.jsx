@@ -38,7 +38,7 @@ function Results() {
         }
         
         setAnalysis(data)
-        setCurrentScore(data.currentReadinessScore || data.readinessScore)
+        setCurrentScore(data.finalScore || data.currentReadinessScore || data.readinessScore)
       } else {
         navigate('/app/analyze')
       }
@@ -59,8 +59,8 @@ function Results() {
       [skill]: newConfidence
     }
 
-    // Calculate new score
-    const baseScore = analysis.readinessScore
+    // Calculate new score based on baseScore
+    const baseScore = analysis.baseScore || analysis.readinessScore
     let scoreAdjustment = 0
     
     Object.values(updatedConfidenceMap).forEach(confidence => {
@@ -77,15 +77,17 @@ function Results() {
     const updatedAnalysis = {
       ...analysis,
       skillConfidenceMap: updatedConfidenceMap,
+      finalScore: newScore,
       currentReadinessScore: newScore
     }
 
     setAnalysis(updatedAnalysis)
     setCurrentScore(newScore)
 
-    // Persist to localStorage
+    // Persist to localStorage with updatedAt timestamp
     updateAnalysis(analysis.id, {
       skillConfidenceMap: updatedConfidenceMap,
+      finalScore: newScore,
       currentReadinessScore: newScore
     })
   }

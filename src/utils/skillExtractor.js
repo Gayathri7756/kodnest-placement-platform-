@@ -29,9 +29,9 @@ export function extractSkills(jdText) {
     }
   })
   
-  // If nothing found, add general stack
+  // If nothing found, add fallback skills
   if (Object.keys(extracted).length === 0) {
-    extracted['General'] = ['Problem Solving', 'Communication', 'Aptitude']
+    extracted['General'] = ['Communication', 'Problem Solving', 'Basic Coding', 'Projects']
   }
   
   return extracted

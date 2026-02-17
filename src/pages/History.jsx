@@ -1,18 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getHistory, clearHistory } from '../utils/historyStorage'
-import { Calendar, Briefcase, TrendingUp, Trash2 } from 'lucide-react'
+import { Calendar, Briefcase, TrendingUp, Trash2, AlertCircle } from 'lucide-react'
 
 function History() {
   const navigate = useNavigate()
   const [history, setHistory] = useState([])
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
-    loadHistory()
+    try {
+      const loadedHistory = getHistory()
+      setHistory(loadedHistory)
+      setLoadError(false)
+    } catch (error) {
+      setLoadError(true)
+    }
   }, [])
 
   const loadHistory = () => {
-    setHistory(getHistory())
+    try {
+      setHistory(getHistory())
+      setLoadError(false)
+    } catch (error) {
+      setLoadError(true)
+    }
   }
 
   const handleClearHistory = () => {
@@ -40,6 +52,22 @@ function History() {
           </button>
         )}
       </div>
+
+      {loadError && (
+        <div className="bg-orange-50 border-l-4 border-orange-400 p-4 mb-6 rounded">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-orange-900">
+                One or more saved entries couldn't be loaded.
+              </p>
+              <p className="text-sm text-orange-800 mt-1">
+                Some history data may be corrupted. Create a new analysis to continue.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {history.length === 0 ? (
         <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
@@ -101,7 +129,7 @@ function History() {
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" />
                     <span className="text-3xl font-bold text-primary">
-                      {item.currentReadinessScore || item.readinessScore}
+                      {item.finalScore || item.currentReadinessScore || item.readinessScore}
                     </span>
                   </div>
                   <span className="text-xs text-gray-500">Readiness Score</span>
