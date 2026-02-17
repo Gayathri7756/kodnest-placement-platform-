@@ -1,9 +1,11 @@
 import { Calendar, Clock } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import CircularProgress from '../components/CircularProgress'
 import SkillRadarChart from '../components/SkillRadarChart'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card'
 
 function Dashboard() {
+  const navigate = useNavigate()
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const activeDays = [true, true, false, true, true, false, false]
 
@@ -61,7 +63,10 @@ function Dashboard() {
                     </div>
                     <h4 className="font-semibold text-gray-900 mb-2">All Topics Complete!</h4>
                     <p className="text-sm text-gray-600 mb-4">Great job! Consider reviewing previous topics or starting advanced challenges.</p>
-                    <button className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors">
+                    <button 
+                      onClick={() => navigate('/app/practice')}
+                      className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
                       Review Topics
                     </button>
                   </div>
@@ -82,7 +87,10 @@ function Dashboard() {
                       <span className="text-sm text-gray-600">{completed}/{total}</span>
                     </div>
                   </div>
-                  <button className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors">
+                  <button 
+                    onClick={() => navigate('/app/practice')}
+                    className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
                     Continue
                   </button>
                 </div>
