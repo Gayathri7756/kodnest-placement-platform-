@@ -36,43 +36,46 @@ function Analyze() {
       return
     }
 
-    if (formData.jdText.trim().length < 200) {
-      setError('Job description is too short. Please paste the full JD for accurate analysis.')
-      return
-    }
-
-    // Extract skills and generate analysis
-    const extractedSkills = extractSkills(formData.jdText)
-    const checklist = generateChecklist(extractedSkills)
-    const plan = generate7DayPlan(extractedSkills)
-    const questions = generateQuestions(extractedSkills)
-    const baseScore = calculateReadinessScore(
-      formData.jdText,
-      formData.company,
-      formData.role,
-      extractedSkills
-    )
-
-    // Create standardized analysis entry
-    const analysis = {
-      company: formData.company.trim() || 'Not specified',
-      role: formData.role.trim() || 'Not specified',
-      jdText: formData.jdText,
-      extractedSkills,
-      checklist,
-      plan7Days: plan,
-      questions,
-      baseScore,
-      readinessScore: baseScore, // For backward compatibility
-      skillConfidenceMap: {},
-      finalScore: baseScore,
-      updatedAt: new Date().toISOString()
-    }
-
-    const saved = saveAnalysis(analysis)
+    // Allow submission but show warning if too short
+    // Don't block submission completely
     
-    // Navigate to results with the analysis ID
-    navigate(`/app/results?id=${saved.id}`)
+    try {
+      // Extract skills and generate analysis
+      const extractedSkills = extractSkills(formData.jdText)
+      const checklist = generateChecklist(extractedSkills)
+      const plan = generate7DayPlan(extractedSkills)
+      const questions = generateQuestions(extractedSkills)
+      const baseScore = calculateReadinessScore(
+        formData.jdText,
+        formData.company,
+        formData.role,
+        extractedSkills
+      )
+
+      // Create standardized analysis entry
+      const analysis = {
+        company: formData.company.trim() || 'Not specified',
+        role: formData.role.trim() || 'Not specified',
+        jdText: formData.jdText,
+        extractedSkills,
+        checklist,
+        plan7Days: plan,
+        questions,
+        baseScore,
+        readinessScore: baseScore, // For backward compatibility
+        skillConfidenceMap: {},
+        finalScore: baseScore,
+        updatedAt: new Date().toISOString()
+      }
+
+      const saved = saveAnalysis(analysis)
+      
+      // Navigate to results with the analysis ID
+      navigate(`/app/results?id=${saved.id}`)
+    } catch (err) {
+      console.error('Error analyzing JD:', err)
+      setError('Failed to analyze job description. Please try again.')
+    }
   }
 
   return (
