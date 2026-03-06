@@ -16,33 +16,44 @@ function Results() {
 
   useEffect(() => {
     const id = searchParams.get('id')
+    console.log('Results page - ID from URL:', id)
+    
     if (id) {
-      const data = getAnalysisById(id)
-      if (data) {
-        // Initialize skillConfidenceMap if not exists
-        if (!data.skillConfidenceMap) {
-          data.skillConfidenceMap = {}
-        }
+      try {
+        const data = getAnalysisById(id)
+        console.log('Retrieved analysis:', data)
         
-        // Generate or retrieve company intel
-        if (data.company && data.company !== 'Not specified') {
-          if (!data.companyIntel) {
-            const intel = generateCompanyIntel(data.company, data.extractedSkills)
-            const rounds = generateRoundMapping(intel, data.extractedSkills, data.role)
-            data.companyIntel = intel
-            data.roundMapping = rounds
-            updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
+        if (data) {
+          // Initialize skillConfidenceMap if not exists
+          if (!data.skillConfidenceMap) {
+            data.skillConfidenceMap = {}
           }
-          setCompanyIntel(data.companyIntel)
-          setRoundMapping(data.roundMapping || [])
+          
+          // Generate or retrieve company intel
+          if (data.company && data.company !== 'Not specified') {
+            if (!data.companyIntel) {
+              const intel = generateCompanyIntel(data.company, data.extractedSkills)
+              const rounds = generateRoundMapping(intel, data.extractedSkills, data.role)
+              data.companyIntel = intel
+              data.roundMapping = rounds
+              updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
+            }
+            setCompanyIntel(data.companyIntel)
+            setRoundMapping(data.roundMapping || [])
+          }
+          
+          setAnalysis(data)
+          setCurrentScore(data.finalScore || data.currentReadinessScore || data.readinessScore)
+        } else {
+          console.error('No analysis found for ID:', id)
+          navigate('/app/analyze')
         }
-        
-        setAnalysis(data)
-        setCurrentScore(data.finalScore || data.currentReadinessScore || data.readinessScore)
-      } else {
+      } catch (error) {
+        console.error('Error loading analysis:', error)
         navigate('/app/analyze')
       }
     } else {
+      console.log('No ID in URL, redirecting to analyze')
       navigate('/app/analyze')
     }
   }, [searchParams, navigate])
@@ -132,7 +143,16 @@ function Results() {
   }
 
   if (!analysis) {
-    return <div>Loading...</div>
+    return (
+      <div className="max-w-6xl">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading analysis...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const weakSkills = getWeakSkills()

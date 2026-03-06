@@ -25,10 +25,13 @@ function createStandardizedEntry(analysis) {
 
 export function saveAnalysis(analysis) {
   try {
+    console.log('Saving analysis:', analysis)
     const history = getHistory()
     const entry = createStandardizedEntry(analysis)
+    console.log('Standardized entry:', entry)
     history.unshift(entry)
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
+    console.log('Analysis saved successfully with ID:', entry.id)
     return entry
   } catch (error) {
     console.error('Error saving analysis:', error)
