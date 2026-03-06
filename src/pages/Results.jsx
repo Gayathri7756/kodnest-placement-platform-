@@ -18,42 +18,52 @@ function Results() {
     const id = searchParams.get('id')
     console.log('Results page - ID from URL:', id)
     
-    if (id) {
-      try {
-        const data = getAnalysisById(id)
-        console.log('Retrieved analysis:', data)
-        
-        if (data) {
-          // Initialize skillConfidenceMap if not exists
-          if (!data.skillConfidenceMap) {
-            data.skillConfidenceMap = {}
-          }
-          
-          // Generate or retrieve company intel
-          if (data.company && data.company !== 'Not specified') {
-            if (!data.companyIntel) {
-              const intel = generateCompanyIntel(data.company, data.extractedSkills)
-              const rounds = generateRoundMapping(intel, data.extractedSkills, data.role)
-              data.companyIntel = intel
-              data.roundMapping = rounds
-              updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
-            }
-            setCompanyIntel(data.companyIntel)
-            setRoundMapping(data.roundMapping || [])
-          }
-          
-          setAnalysis(data)
-          setCurrentScore(data.finalScore || data.currentReadinessScore || data.readinessScore)
-        } else {
-          console.error('No analysis found for ID:', id)
-          navigate('/app/analyze')
-        }
-      } catch (error) {
-        console.error('Error loading analysis:', error)
-        navigate('/app/analyze')
-      }
-    } else {
+    if (!id) {
       console.log('No ID in URL, redirecting to analyze')
+      navigate('/app/analyze')
+      return
+    }
+    
+    try {
+      const data = getAnalysisById(id)
+      console.log('Retrieved analysis:', data)
+      
+      if (!data) {
+        console.error('No analysis found for ID:', id)
+        alert('Analysis not found. Redirecting to analyze page.')
+        navigate('/app/analyze')
+        return
+      }
+      
+      // Initialize skillConfidenceMap if not exists
+      if (!data.skillConfidenceMap) {
+        data.skillConfidenceMap = {}
+      }
+      
+      // Generate or retrieve company intel
+      if (data.company && data.company !== 'Not specified') {
+        if (!data.companyIntel) {
+          try {
+            const intel = generateCompanyIntel(data.company, data.extractedSkills)
+            const rounds = generateRoundMapping(intel, data.extractedSkills, data.role)
+            data.companyIntel = intel
+            data.roundMapping = rounds
+            updateAnalysis(data.id, { companyIntel: intel, roundMapping: rounds })
+          } catch (err) {
+            console.error('Error generating company intel:', err)
+          }
+        }
+        setCompanyIntel(data.companyIntel)
+        setRoundMapping(data.roundMapping || [])
+      }
+      
+      console.log('Setting analysis data...')
+      setAnalysis(data)
+      setCurrentScore(data.finalScore || data.currentReadinessScore || data.readinessScore)
+      console.log('Analysis set successfully')
+    } catch (error) {
+      console.error('Error loading analysis:', error)
+      alert('Error loading analysis: ' + error.message)
       navigate('/app/analyze')
     }
   }, [searchParams, navigate])

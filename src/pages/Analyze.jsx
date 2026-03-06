@@ -69,11 +69,13 @@ function Analyze() {
       }
 
       const saved = saveAnalysis(analysis)
+      console.log('Navigating to results with ID:', saved.id)
       
       // Navigate to results with the analysis ID
       navigate(`/app/results?id=${saved.id}`)
     } catch (err) {
       console.error('Error analyzing JD:', err)
+      alert('Error: ' + err.message)
       setError('Failed to analyze job description. Please try again.')
     }
   }
