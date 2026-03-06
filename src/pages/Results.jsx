@@ -118,7 +118,7 @@ function Results() {
     
     switch(type) {
       case 'plan':
-        text = copy7DayPlan(analysis.plan)
+        text = copy7DayPlan(analysis.plan7Days || analysis.plan || [])
         break
       case 'checklist':
         text = copyRoundChecklist(analysis.checklist)
@@ -295,11 +295,11 @@ function Results() {
         </h3>
         <p className="text-sm text-gray-600 mb-4">Toggle each skill to indicate your confidence level. This will update your readiness score.</p>
         <div className="space-y-4">
-          {Object.entries(analysis.extractedSkills).map(([category, skills]) => (
+          {Object.entries(analysis.extractedSkills || {}).map(([category, skills]) => (
             <div key={category}>
               <h4 className="font-medium text-gray-700 mb-2">{category}</h4>
               <div className="flex flex-wrap gap-2">
-                {skills.map((skill, idx) => {
+                {(skills || []).map((skill, idx) => {
                   const confidence = analysis.skillConfidenceMap[skill] || 'practice'
                   const isKnown = confidence === 'know'
                   
@@ -407,11 +407,11 @@ function Results() {
           Round-wise Preparation Checklist
         </h3>
         <div className="space-y-6">
-          {analysis.checklist.map((round, idx) => (
+          {(analysis.checklist || []).map((round, idx) => (
             <div key={idx}>
               <h4 className="font-semibold text-gray-900 mb-3">{round.round}</h4>
               <ul className="space-y-2">
-                {round.items.map((item, itemIdx) => (
+                {(round.items || []).map((item, itemIdx) => (
                   <li key={itemIdx} className="flex items-start gap-2">
                     <span className="text-primary mt-1">•</span>
                     <span className="text-gray-700">{item}</span>
@@ -430,13 +430,13 @@ function Results() {
           7-Day Preparation Plan
         </h3>
         <div className="space-y-4">
-          {analysis.plan.map((day, idx) => (
+          {(analysis.plan7Days || analysis.plan || []).map((day, idx) => (
             <div key={idx} className="border-l-4 border-primary pl-4">
               <h4 className="font-semibold text-gray-900 mb-1">
                 {day.day}: {day.title}
               </h4>
               <ul className="space-y-1">
-                {day.tasks.map((task, taskIdx) => (
+                {(day.tasks || []).map((task, taskIdx) => (
                   <li key={taskIdx} className="text-sm text-gray-600">
                     • {task}
                   </li>
@@ -454,7 +454,7 @@ function Results() {
           10 Likely Interview Questions
         </h3>
         <div className="space-y-3">
-          {analysis.questions.map((question, idx) => (
+          {(analysis.questions || []).map((question, idx) => (
             <div key={idx} className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
                 {idx + 1}
