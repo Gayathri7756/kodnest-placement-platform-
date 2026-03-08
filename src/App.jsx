@@ -11,6 +11,7 @@ import Results from './pages/Results'
 import History from './pages/History'
 import Testing from './pages/Testing'
 import Ship from './pages/Ship'
+import Proof from './pages/Proof'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="history" element={<History />} />
         <Route path="testing" element={<Testing />} />
         <Route path="ship" element={<Ship />} />
+        <Route path="proof" element={<Proof />} />
       </Route>
     </Routes>
   )

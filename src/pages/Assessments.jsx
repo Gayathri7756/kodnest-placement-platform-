@@ -1,4 +1,11 @@
+import { useEffect } from 'react'
+import { markStepComplete } from '../utils/completionTracker'
+
 function Assessments() {
+  useEffect(() => {
+    markStepComplete('assessments')
+  }, [])
+  
   return (
     <div>
       <h2 className="text-3xl font-bold mb-6">Assessments</h2>

@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { getAnalysisById, updateAnalysis } from '../utils/historyStorage'
 import { copy7DayPlan, copyRoundChecklist, copyQuestions, downloadFullReport, copyToClipboard } from '../utils/exportUtils'
 import { generateCompanyIntel, generateRoundMapping } from '../utils/companyIntel'
+import { markStepComplete } from '../utils/completionTracker'
 import { CheckCircle, Calendar, Target, HelpCircle, ArrowLeft, Download, Copy, Check, AlertCircle, Building2, TrendingUp, Users } from 'lucide-react'
 
 function Results() {
@@ -15,6 +16,7 @@ function Results() {
   const [roundMapping, setRoundMapping] = useState([])
 
   useEffect(() => {
+    markStepComplete('results')
     const id = searchParams.get('id')
     console.log('Results page - ID from URL:', id)
     

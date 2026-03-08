@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getHistory, clearHistory } from '../utils/historyStorage'
+import { markStepComplete } from '../utils/completionTracker'
 import { Calendar, Briefcase, TrendingUp, Trash2, AlertCircle } from 'lucide-react'
 
 function History() {
@@ -9,6 +10,7 @@ function History() {
   const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
+    markStepComplete('history')
     try {
       const loadedHistory = getHistory()
       setHistory(loadedHistory)

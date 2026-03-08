@@ -4,12 +4,17 @@ import React from 'react'
 import CircularProgress from '../components/CircularProgress'
 import SkillRadarChart from '../components/SkillRadarChart'
 import { Card, CardHeader, CardTitle, CardContent } from '../components/Card'
+import { markStepComplete } from '../utils/completionTracker'
 
 function Dashboard() {
   const navigate = useNavigate()
   const [showCompletionState, setShowCompletionState] = React.useState(false)
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const activeDays = [true, true, false, true, true, false, false]
+
+  React.useEffect(() => {
+    markStepComplete('dashboard')
+  }, [])
 
   const upcomingAssessments = [
     { title: 'DSA Mock Test', time: 'Tomorrow, 10:00 AM' },

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { extractSkills, generateChecklist, generate7DayPlan, generateQuestions, calculateReadinessScore } from '../utils/skillExtractor'
 import { saveAnalysis } from '../utils/historyStorage'
 import { AlertCircle } from 'lucide-react'
+import { markStepComplete } from '../utils/completionTracker'
 
 function Analyze() {
   const navigate = useNavigate()
@@ -13,6 +14,10 @@ function Analyze() {
   })
   const [showWarning, setShowWarning] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    markStepComplete('analyze')
+  }, [])
 
   const handleJDChange = (e) => {
     const text = e.target.value
