@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Checklist localStorage</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #4f46e5;
+    }
+    .success { color: #16a34a; font-weight: bold; }
+    .error { color: #dc2626; font-weight: bold; }
+    pre {
+      background: #f3f4f6;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Testing Checklist localStorage Tester</h1>
+  
+  <div class="card">
+    <h2>Test Controls</h2>
+    <button onclick="testSave()">1. Save Test Data</button>
+    <button onclick="testLoad()">2. Load Data</button>
+    <button onclick="testUpdate()">3. Update Item</button>
+    <button onclick="testReset()">4. Reset All</button>
+    <button onclick="clearStorage()">Clear Storage</button>
+  </div>
+
+  <div class="card">
+    <h2>Test Results</h2>
+    <div id="results"></div>
+  </div>
+
+  <div class="card">
+    <h2>Current localStorage Value</h2>
+    <pre id="storage"></pre>
+  </div>
+
+  <script>
+    const KEY = 'placement_test_checklist';
+    const results = document.getElementById('results');
+    const storage = document.getElementById('storage');
+
+    function log(message, isError = false) {
+      const p = document.createElement('p');
+      p.className = isError ? 'error' : 'success';
+      p.textContent = message;
+      results.appendChild(p);
+      updateStorageDisplay();
+    }
+
+    function updateStorageDisplay() {
+      const data = localStorage.getItem(KEY);
+      storage.textContent = data ? JSON.stringify(JSON.parse(data), null, 2) : 'No data stored';
+    }
+
+    function testSave() {
+      results.innerHTML = '';
+      try {
+        const testData = {
+          'jd-required': true,
+          'short-jd-warning': false,
+          'skills-extraction': true,
+          'round-mapping': false,
+          'score-deterministic': true,
+          'skill-toggles': false,
+          'persist-refresh': false,
+          'history-works': true,
+          'export-buttons': false,
+          'no-console-errors': false
+        };
+        localStorage.setItem(KEY, JSON.stringify(testData));
+        log('✓ Test data saved successfully');
+        
+        const passedCount = Object.values(testData).filter(Boolean).length;
+        log(`✓ Passed count: ${passedCount} / 10`);
+      } catch (error) {
+        log('✗ Error saving: ' + error.message, true);
+      }
+    }
+
+    function testLoad() {
+      results.innerHTML = '';
+      try {
+        const stored = localStorage.getItem(KEY);
+        if (!stored) {
+          log('✗ No data found in localStorage', true);
+          return;
+        }
+        
+        const data = JSON.parse(stored);
+        log('✓ Data loaded successfully');
+        log(`✓ Found ${Object.keys(data).length} items`);
+        
+        const passedCount = Object.values(data).filter(Boolean).length;
+        log(`✓ Tests passed: ${passedCount} / 10`);
+        
+        const allPassed = Object.keys(data).length === 10 && Object.values(data).every(Boolean);
+        if (allPassed) {
+          log('✓ ALL TESTS PASSED - Ship page should be UNLOCKED');
+        } else {
+          log('⚠ Not all tests passed - Ship page should be LOCKED');
+        }
+      } catch (error) {
+        log('✗ Error loading: ' + error.message, true);
+      }
+    }
+
+    function testUpdate() {
+      results.innerHTML = '';
+      try {
+        const stored = localStorage.getItem(KEY);
+        if (!stored) {
+          log('✗ No data to update. Run "Save Test Data" first.', true);
+          return;
+        }
+        
+        const data = JSON.parse(stored);
+        data['short-jd-warning'] = true;
+        data['round-mapping'] = true;
+        localStorage.setItem(KEY, JSON.stringify(data));
+        
+        log('✓ Updated 2 items to true');
+        const passedCount = Object.values(data).filter(Boolean).length;
+        log(`✓ New count: ${passedCount} / 10`);
+      } catch (error) {
+        log('✗ Error updating: ' + error.message, true);
+      }
+    }
+
+    function testReset() {
+      results.innerHTML = '';
+      try {
+        localStorage.setItem(KEY, JSON.stringify({}));
+        log('✓ Checklist reset (empty object saved)');
+        log('✓ Tests passed: 0 / 10');
+        log('✓ Ship page should be LOCKED');
+      } catch (error) {
+        log('✗ Error resetting: ' + error.message, true);
+      }
+    }
+
+    function clearStorage() {
+      results.innerHTML = '';
+      localStorage.removeItem(KEY);
+      log('✓ localStorage cleared completely');
+      updateStorageDisplay();
+    }
+
+    // Initial display
+    updateStorageDisplay();
+  </script>
+</body>
+</html>

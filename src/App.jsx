@@ -9,6 +9,8 @@ import Profile from './pages/Profile'
 import Analyze from './pages/Analyze'
 import Results from './pages/Results'
 import History from './pages/History'
+import Testing from './pages/Testing'
+import Ship from './pages/Ship'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="analyze" element={<Analyze />} />
         <Route path="results" element={<Results />} />
         <Route path="history" element={<History />} />
+        <Route path="testing" element={<Testing />} />
+        <Route path="ship" element={<Ship />} />
       </Route>
     </Routes>
   )
